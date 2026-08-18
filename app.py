@@ -14,18 +14,21 @@ st.set_page_config(page_title="Breast Cancer Diagnostics", layout="centered")
 st.title("Assignment 2: ML Classifier Dashboard")
 st.write("Evaluate multiple classification models on Breast Cancer diagnostic data.")
 
-# --- File Upload ---
-# Widget now clearly indicates it is required
-user_csv = st.file_uploader("Upload your test_data.csv file", type="csv")
+# --- File Upload & Automatic Data Loading ---
+# Widget is available but optional
+user_csv = st.file_uploader("Upload your test_data.csv file (Optional)", type="csv")
 
-# Strict loading logic: ONLY proceed if a file is uploaded
+# Logic: Use uploaded file if present, otherwise default to the local file
 if user_csv is not None:
     user_csv.seek(0)  # Force reset the file buffer pointer
     eval_df = pd.read_csv(user_csv)
     st.success(f"✅ Successfully loaded custom file: {user_csv.name}")
+elif os.path.exists("test_data.csv"):
+    eval_df = pd.read_csv("test_data.csv")
+    st.info("ℹ️ Automatically loaded default 'test_data.csv' from the repository.")
 else:
-    # Halts the app here until an upload occurs
-    st.info("ℹ️ Please upload a CSV file to begin the evaluation.")
+    # Only halts if absolutely neither is available
+    st.error("No dataset found! Please upload your test data.")
     st.stop()
 
 # --- Model Dictionary ---
